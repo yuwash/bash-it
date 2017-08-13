@@ -90,10 +90,10 @@ function davencmount () {
 	fi
 	unmount=''
 	for target in "$@"
-	do if [[ $target = -u ]]
+	do if [[ "$target" = -u ]]
 	then
 		unmount='yes'
-	else if [[ -z $unmount ]]
+	else if [[ -z "$unmount" ]]
 	then 
 		grep "^$target\>" "$DAVENCMOUNT_FILE" | while read entry
 		do etmp="`envsubst <<<"$entry"`" && read -a earr <<<"$etmp"
