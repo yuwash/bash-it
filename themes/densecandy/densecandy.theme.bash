@@ -2,6 +2,7 @@
 
 THEME_SHOW_USER_HOST=true
 USER_HOST_THEME_PROMPT_SUFFIX=':'
+VIRTUALENV_THEME_PROMPT_PREFIX=''
 SCM_THEME_PROMPT_DIRTY=${SCM_THEME_PROMPT_DIRTY:1}
 SCM_THEME_PROMPT_CLEAN=${SCM_THEME_PROMPT_CLEAN:1}
 SCM_THEME_PROMPT_PREFIX=''
@@ -18,7 +19,7 @@ function user_mark() {
 }
 
 function prompt_command() {
-	PS1="${green}$(user_host_prompt)${reset_color}${white}\w${reset_color}$(scm_prompt_char_info)${bold_blue}$(user_mark)${reset_color} ";
+	PS1="${bold_green}$(virtualenv_prompt)$(user_host_prompt)${reset_color}${bold_white}\w${reset_color}$(scm_prompt_char_info)${bold_blue}$(user_mark)${blue}${reset_color} ";
 }
 
 safe_append_prompt_command prompt_command
