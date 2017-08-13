@@ -4,6 +4,24 @@ about-plugin 'mount davfs2 and encfs as configured in ~/.davencmount'
 DAVENCMOUNT_FILE="$HOME/.davencmount"
 
 
+function _grepmany_first_word () {
+	if [[ "$#" = 0 ]]
+	then
+		tee
+		return $?
+	fi
+	args=()
+	n=0
+	for pattern in "$@"
+	do
+		args[$n]=-e
+		args[$((n+1))]="^$pattern"
+		n=$((n+2))
+	done
+	grep -w "${args[@]}"
+}
+
+
 function _mounted () {
 	if ! [[ -z $2 ]]
 	then echo _mounted ignoring surplus arguments $2 ..
@@ -87,6 +105,12 @@ function davencmount () {
 	else
 		echo davencmount doesn\'t work without configuration file\; aborting.
 		return 2
+	fi
+	if [[ "$1" = -l ]]
+	then
+		shift
+		_grepmany_first_word "$@" < "$DAVENCMOUNT_FILE"
+		return $?
 	fi
 	unmount=''
 	for target in "$@"
