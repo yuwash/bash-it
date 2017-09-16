@@ -23,13 +23,17 @@ function histsync () {
 		dest="$target/${HFBASE}-latest"
 		if [[ -e "$dest" ]]
 		then
-			if diff "$HISTFILE" "$dest"
+			if [[ -f "$HISTFILE" ]]
 			then
-				echo skipping up-to-date destination $dest
-				continue
+				if diff "$HISTFILE" "$dest"
+				then echo skipping up-to-date destination $dest
+				else suffix="-`_file_iso_date "$dest"`" \
+					&& mv -i "$dest" "${dest%-latest}$suffix" \
+					&& cp -ai "$HISTFILE" "$dest"
+				fi
+			else cp -ai "$dest" "$HISTFILE" \
+				&& history -c && history -r
 			fi
-			suffix="-`_file_iso_date "$dest"`"
-			mv -i "$dest" "${dest%-latest}$suffix"
-		fi && cp -ai "$HISTFILE" "$dest"
+		fi
 	done
 }
