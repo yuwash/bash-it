@@ -126,7 +126,10 @@ function davencmount () {
 			fi
 			if [[ "${earr[1]}" = encfs ]]
 			then _mounted "${earr[-1]}" || { encfs ${earr[@]:2} < /dev/tty; }
+			else if [[ "${earr[1]}" = sshfs ]]
+			then _mounted "${earr[-1]}" || { sshfs ${earr[@]:2} < /dev/tty; }
 			else _mounted "${earr[-1]}" || { mount ${earr[@]:1} < /dev/tty; }
+			fi
 			fi || { 
 				ret=$?
 				echo failed at $target ${earr[@]:1}
@@ -139,7 +142,7 @@ function davencmount () {
 			if [[ -z "${earr[1]}" ]]
 			then echo error at $entry; return 1
 			fi
-			if [[ "${earr[1]}" = encfs ]]
+			if [[ "${earr[1]}" = encfs ]] || [[ "${earr[1]}" = sshfs ]]
 			then _mounted "${earr[-1]}" && { fusermount -u "${earr[-1]}" < /dev/tty; }
 			else _mounted "${earr[-1]}" && { fusermount -u "${earr[-1]}" < /dev/tty; }
 			fi || echo skipping unmounting possibly failed $target ${earr[-1]}
