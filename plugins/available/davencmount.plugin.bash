@@ -66,6 +66,23 @@ function _confirm () {
 }
 
 
+function _try_mount_or_mkdir () {
+	"$@" || {
+		ret="$?"
+		target_dir="${@:$#}"
+		if [[ -e "$target_dir" ]] || ! _confirm "Create directory $target_dir?"
+		then
+			return $ret
+		fi
+		mkdir -p "$target_dir" || {
+			sudo mkdir -p "$target_dir" \
+			&& sudo chown $USER "$target_dir"
+		}
+		"$@"
+	}
+}
+
+
 function davencmount () {
 	about 'mount as configured in ~/.davencmount'
 	example '$ davencmount mytarget'
@@ -125,9 +142,15 @@ function davencmount () {
 			then echo error at $entry; return 1
 			fi
 			if [[ "${earr[1]}" = encfs ]]
-			then _mounted "${earr[-1]}" || { encfs ${earr[@]:2} < /dev/tty; }
+			then _mounted "${earr[-1]}" || {
+				_try_mount_or_mkdir \
+					encfs ${earr[@]:2} < /dev/tty
+			}
 			else if [[ "${earr[1]}" = sshfs ]]
-			then _mounted "${earr[-1]}" || { sshfs ${earr[@]:2} < /dev/tty; }
+			then _mounted "${earr[-1]}" || {
+				_try_mount_or_mkdir \
+					sshfs ${earr[@]:2} < /dev/tty
+			}
 			else _mounted "${earr[-1]}" || { mount ${earr[@]:1} < /dev/tty; }
 			fi
 			fi || { 
